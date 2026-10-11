@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jeanel's Meal Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF3F0;--card:#fff;--ink:#14312B;--mute:#5B6F69;--line:#D3E0DA;--ac:#7B2D6B;--acink:#fff;--hi:#F0B429;--ok:#2E7D5B;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1D19;--card:#172823;--ink:#E6F0EC;--mute:#9DB2AB;--line:#2A3F38;--ac:#D58AC6;--acink:#1B0F18;--hi:#F0B429;--ok:#6FCF9F}}
+:root[data-theme="dark"]{--bg:#0F1D19;--card:#172823;--ink:#E6F0EC;--mute:#9DB2AB;--line:#2A3F38;--ac:#D58AC6;--acink:#1B0F18;--hi:#F0B429;--ok:#6FCF9F}
+*,*:before,*:after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque',Figtree,sans-serif;margin:0;line-height:1.15}
+main{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+header{margin-bottom:16px}
+h1{font-size:clamp(1.9rem,6vw,2.8rem);font-weight:800}
+.sub{color:var(--mute);margin:6px 0 0;max-width:60ch}
+nav{display:flex;gap:6px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 0;z-index:5}
+nav button{flex:1;padding:12px 8px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;font:600 1rem Figtree,sans-serif;cursor:pointer}
+nav button[aria-selected=true]{background:var(--ac);color:var(--acink);border-color:var(--ac)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0 16px}
+.bar label{font-weight:600}
+select{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px;width:100%;min-height:44px}
+.bar select{width:auto}
+.btn{font:600 .95rem Figtree,sans-serif;padding:10px 14px;border-radius:10px;border:1.5px solid var(--ac);background:transparent;color:var(--ac);cursor:pointer;min-height:44px}
+.btn.fill{background:var(--ac);color:var(--acink)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.day{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.day h3{font-size:1.25rem;margin-bottom:10px}
+.slot{margin-bottom:12px}
+.slot span{display:block;font-size:.85rem;font-weight:600;color:var(--mute);margin-bottom:3px}
+.ing{font-size:.82rem;color:var(--mute);margin:4px 0 0}
+.sum{background:var(--card);border-left:6px solid var(--hi);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.aisle{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:14px}
+.aisle h3{font-size:1.1rem;margin-bottom:6px}
+.it{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
+.it:first-of-type{border-top:0}
+.it input{width:22px;height:22px;accent-color:var(--ok);flex:none}
+.it b{margin-left:auto;font-weight:600;white-space:nowrap}
+.it.done span{text-decoration:line-through;color:var(--mute)}
+.it.done b{color:var(--mute)}
+.g{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}
+.g h3{margin-bottom:8px;font-size:1.2rem}
+.g ul{margin:0;padding-left:20px}
+.g li{margin:5px 0;max-width:75ch}
+.macros{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:10px}
+.macros div{background:var(--bg);border-radius:12px;padding:10px 12px}
+.macros b{display:block;font:800 1.5rem 'Bricolage Grotesque',sans-serif}
+.empty{padding:28px 8px;color:var(--mute)}
+.note{font-size:.88rem;color:var(--mute);max-width:70ch}
+.dh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.dh h3{margin:0}
+.cp{width:auto;min-height:36px;padding:6px 10px;font-size:.85rem;font-weight:600;color:var(--ac);border-color:var(--ac)}
+.btn.sm{padding:6px 12px;min-height:36px;font-size:.85rem}
+.mac{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;padding:10px;background:var(--bg);border-radius:12px}
+.mac div{font-size:.78rem;color:var(--mute);min-width:0}
+.mac b{display:block;color:var(--ink);font-size:.95rem}
+.mac i{display:block;height:5px;border-radius:3px;background:var(--line);margin-top:4px;overflow:hidden}
+.mac i u{display:block;height:100%;background:var(--ok)}
+.mac .over u{background:var(--hi)}
+.vb{margin-top:8px}
+dialog{border:0;border-radius:16px;padding:0;width:min(520px,92vw);max-height:85vh;overflow:auto;background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.dc{padding:20px}.dc h2{font-size:1.5rem;margin-bottom:6px}.dc h3{font-size:1.05rem;margin:16px 0 6px}
+.dc ul,.dc ol{padding-left:22px;margin:0}.dc li{margin:5px 0}.dc .btn{margin-top:18px;width:100%}
+@media (prefers-reduced-motion:no-preference){.it,nav button,.btn{transition:background .15s}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Jeanel's meal planner</h1>
+<p class="sub">Pick your meals for each day and get one shopping list for the week. Based on the nutrition plan from Janine Barnard (JustFit).</p>
+</header>
+<nav role="tablist" aria-label="Sections">
+<button role="tab" data-t="plan">Plan</button>
+<button role="tab" data-t="shop">Shopping list</button>
+<button role="tab" data-t="guide">Guidelines</button>
+</nav>
+<div id="view"></div>
+<dialog id="dlg" aria-labelledby="dt"></dialog>
+</main>
+<script>
+const P=s=>s.split(';').map(x=>{const[n,q,a]=x.trim().split(':');const m=(q||'1').match(/^([\d.]+)\s*(.*)$/);return{n,q:+m[1],u:m[2],a}});
+/* Estimated [kcal, protein g, fat g, carbs g] per meal. Not in the PDF: calculated from typical food values. */
+const MAC={'Egg pita':[245,18,11,20],'All Bran & banana':[330,26,3,53],'Yoghurt berry treat':[245,23,4,29],'Protein smoothie':[265,33,12,13],
+'Chicken quinoa bowl':[420,50,10,29],'Steak & salad wrap':[435,33,20,33],'Avocado & bean dish':[375,15,13,52],'Bacon, feta & avocado salad':[330,15,24,15],
+'Chicken & roasted veggies':[360,48,5,28],'Lean pork & couscous salad':[510,50,9,57],'White fish with potato wedges':[290,34,2,35],'Baked butternut & mince':[300,29,6,33],
+'Honey & berry oats':[270,18,4,45],'Weetbix & berries':[305,22,2,50],'Breakfast wrap':[355,22,18,29],'Protein smoothie (berry)':[235,30,4,23],
+'Roasted chickpea, tomato & chicken bowl':[435,53,8,35],'Chicken/beef sandwich':[280,20,5,40],'Rice & tuna dish':[305,27,5,39],'Chicken & spinach wrap':[365,47,7,26],
+'White fish with spring veggies':[325,37,2,41],'Butternut soup':[240,7,5,42],'Steak & rice with veggies':[490,46,12,49],'Chicken burger & wedges':[495,47,6,62],
+'Nut butter & honey toast':[310,12,10,47],'Fibre Plus':[230,12,1,42],'Scrambled eggs on toast':[245,17,11,21],
+'Tuna & egg salad':[330,33,9,29],'Pasta Greek salad':[325,16,7,48],'Hummus & crackerbread':[160,5,5,24],'Steak & pasta':[445,42,9,45],
+'Oven-roasted gem squash & chicken':[310,45,5,18],'Beef steak roll':[420,37,15,32],'Chicken & chickpea salad':[410,48,7,38],'Baked sweet potato':[285,9,11,37],
+'Greek yoghurt':[110,10,3,9],'Yoghurt & berries':[150,11,3,18],'Biltong':[130,25,3,2],'Apple & nut butter':[170,4,8,23],'Nuts & biltong':[275,26,17,7],'Fresh fruit (kiwi, apple, berries, pineapple)':[100,1,0,24],
+'Dipped raw veggies':[100,3,3,15],'Rice cakes & avocado':[130,3,6,18],'Egg on dry toast':[105,7,5,7],
+'Rice cakes & honey':[90,2,1,21],'Dark chocolate or dates':[75,1,5,6],'Banana & nut butter':[180,5,8,25],'Banana protein smoothie':[355,34,12,35],
+'Cheese slices':[100,7,8,0],'Greek yoghurt & honey':[130,10,3,15],'Baked pineapple':[75,1,0,18],'Skinny hot chocolate & protein':[155,26,3,9]};
+const METHOD={
+'Egg pita':['Toast the half pita (or a slice of toast).','Heat a pan with a light spray of Spray & Cook.','Scramble the eggs, stirring in the cottage cheese. Season with salt and pepper.','Fill the pita with the eggs, then add the tomato and onion.'],
+'All Bran & banana':['Stir the protein powder into the milk, if using.','Pour the milk over the All Bran in a bowl.','Slice the banana on top and drizzle with the honey.'],
+'Yoghurt berry treat':['Spoon the yoghurt into a bowl and stir in the protein powder, if using.','Top with the berries.','Finish with a drizzle of honey.'],
+'Protein smoothie':['Add the protein powder, nut butter and milk to a blender.','Add 100 ml water and 1 cup of ice.','Blend until smooth and drink straight away.'],
+'Protein smoothie (berry)':['Add the protein powder, frozen berries and milk to a blender.','Add 100 ml water and 1 cup of ice.','Blend until smooth and drink straight away.'],
+'Honey & berry oats':['Weigh the oats raw, then cook with water or milk for 2-3 minutes, stirring.','Let it cool slightly, then stir in the protein powder if using.','Top with the blueberries and drizzle with honey.'],
+'Weetbix & berries':['Crumble the Weetbix into a bowl.','Stir the protein powder into the milk if using, then pour it over.','Add the berries and drizzle with honey.'],
+'Breakfast wrap':['Heat a pan with a light spray of Spray & Cook and scramble the eggs.','Warm the wrap for a few seconds.','Spread the cottage cheese on the wrap, add the egg, avocado, tomato and baby greens.','Roll up and eat warm.'],
+'Nut butter & honey toast':['Toast the bread.','Spread with the nut butter and drizzle with honey.','Add the berries on top if you like.'],
+'Fibre Plus':['Put the Fibre Plus in a bowl and pour over the milk.','Drizzle with the honey.'],
+'Scrambled eggs on toast':['Toast the bread.','Heat a pan with a light spray of Spray & Cook and scramble the eggs with salt and pepper.','Serve on the toast with the tomato and onion.']};
+Object.assign(METHOD,{
+'Chicken quinoa bowl':['Cook the quinoa or rice (weighed raw) as per the packet.','Grill or pan-cook the chicken with a light spray of Spray & Cook until cooked through. Weigh it cooked.','Chop the onion and halve the cherry tomatoes.','Combine everything in a bowl with the olives (or avocado).'],
+'Steak & salad wrap':['Heat a pan with a light spray of Spray & Cook and fry the raw beef strips until browned.','Warm the wrap.','Fill with the steak, baby greens, carrot, tomato and avocado, then roll up.'],
+'Avocado & bean dish':['Warm the cooked beans and sweetcorn together.','Spoon into a bowl and add the mixed green salad.','Top with sliced avocado and drizzle with balsamic vinegar.'],
+'Bacon, feta & avocado salad':['Grill or dry-fry the bacon with the fat cut off until crisp, then chop.','Arrange the salad greens and halved cherry tomatoes in a bowl.','Top with the bacon, avocado and crumbled feta, then drizzle with balsamic vinegar.'],
+'Roasted chickpea, tomato & chicken bowl':['Roast the drained chickpeas and cherry tomatoes at 180°C with a light spray of oil for about 20 minutes.','Cook the chicken until done and slice it. Weigh it cooked.','Serve over the baby greens with a drizzle of balsamic vinegar.'],
+'Chicken/beef sandwich':['Spread the hummus on the bread.','Layer the sliced chicken or beef, lettuce and tomato.','Close the sandwich and cut in half.'],
+'Rice & tuna dish':['Cook the rice (weighed raw) as per the packet.','Drain the tuna and flake it into the rice.','Add the olives and mix.'],
+'Chicken & spinach wrap':['Cook and slice the chicken. Weigh it cooked.','Spread the cottage cheese on the wrap.','Add the chicken, spinach and tomato, then roll up.'],
+'Tuna & egg salad':['Boil the baby potatoes until tender and halve them. Boil the egg and quarter it.','Steam the green beans for 3-4 minutes.','Toss everything with the tuna, olives and baby greens. Season and drizzle with balsamic vinegar.'],
+'Pasta Greek salad':['Cook the pasta (weighed raw), drain and cool.','Mix with the beans (or cooked chicken), cherry tomatoes, cucumber and onion.','Top with crumbled feta and squeeze over the lemon juice.'],
+'Hummus & crackerbread':['Spread the hummus on the crackerbread.','Top with sliced tomato.'],
+'Steak & pasta':['Cook the pasta (weighed raw) as per the packet.','Fry the steak strips with a light spray of Spray & Cook until done. Weigh them cooked.','Warm the tomato mix for the pasta sauce, then toss everything together.'],
+'Chicken & roasted veggies':['Heat the oven to 180°C.','Spray the vegetables and butternut lightly with oil and roast for about 25 minutes.','Cook the chicken until done and weigh it cooked, then serve together.'],
+'Lean pork & couscous salad':['Cook the pork with a light spray of oil until done. Weigh it cooked.','Soak the couscous (weighed raw) in boiling water for 5 minutes and fluff with a fork.','Warm the corn and peas, then combine with the couscous and baby greens and top with the pork.'],
+'White fish with potato wedges':['Heat the oven to 180°C.','Cut the potato into wedges, spray lightly and bake for about 30 minutes.','Bake or pan-fry the fish for 10-12 minutes. Weigh it cooked.','Serve with the mixed green salad and a drizzle of balsamic vinegar.'],
+'Baked butternut & mince':['Halve the butternut, scoop out the seeds and bake at 180°C until soft.','Brown the lean mince in a pan with a light spray of oil. Weigh it cooked.','Stuff the butternut with the mince and top with the cottage cheese.'],
+'White fish with spring veggies':['Boil the baby potatoes until tender.','Steam the green beans and chopped onion.','Bake or pan-fry the fish and serve with the vegetables, a mixed green salad and lemon slices.'],
+'Butternut soup':['Heat the soup (a ready-made one works) until piping hot.','Serve with the slice of brown bread.'],
+'Steak & rice with veggies':['Cook the rice (weighed raw) as per the packet.','Cook the steak to your liking. Weigh it cooked.','Warm the sweetcorn or peas and serve everything together.'],
+'Chicken burger & wedges':['Heat the oven to 180°C and bake the potato wedges (sprayed lightly) for about 30 minutes.','Cook the chicken fillet until done. Weigh it cooked.','Build the burger on the bun with lettuce and tomato and serve with the wedges.'],
+'Oven-roasted gem squash & chicken':['Heat the oven to 180°C.','Roast the gem squash and sliced onion with salt and pepper for about 30 minutes.','Cook the chicken until done. Weigh it cooked, then serve together.'],
+'Beef steak roll':['Fry the steak with a light spray of Spray & Cook to your liking.','Toast the bun.','Fill with the steak, cheddar, lettuce, tomato and lite tomato sauce.'],
+'Chicken & chickpea salad':['Cook and slice the chicken. Weigh it cooked.','Toss with the drained chickpeas, salad greens, cherry tomatoes and bell pepper.','Drizzle with balsamic vinegar.'],
+'Baked sweet potato':['Pierce the sweet potato and bake at 180°C for about 45 minutes (or microwave until soft).','Split it open and add the butter.','Serve with a fried egg (use a spray of oil).'],
+'Greek yoghurt':['Spoon the yoghurt into a bowl and eat.'],
+'Biltong':['Weigh 50 g of lean biltong (no fat).'],
+'Apple & nut butter':['Slice the apple.','Serve with the nut butter for dipping.'],
+'Nuts & biltong':['Weigh out the nuts and the lean biltong and enjoy together.'],
+'Yoghurt & berries':['Spoon the yoghurt into a bowl.','Top with the mixed berries.'],
+'Fresh fruit (kiwi, apple, berries, pineapple)':['Pick fruit from the plan list, such as 2 kiwis, 1 apple, 100 g blueberries or 2 slices of pineapple.'],
+'Dipped raw veggies':['Cut the carrot, cucumber or celery into sticks.','Serve with the reduced-fat hummus or fat-free cottage cheese for dipping.'],
+'Rice cakes & avocado':['Mash the avocado and spread it on the rice cakes.','Season with salt, pepper and a little vinegar.'],
+'Egg on dry toast':['Boil the egg for 7-8 minutes, peel and slice.','Serve on the crackerbread.'],
+'Rice cakes & honey':['Spread peanut butter on the rice cakes if you like.','Drizzle with the honey.'],
+'Dark chocolate or dates':['Have 2 blocks of 70% dark chocolate or 3-5 pitted dates.'],
+'Banana & nut butter':['Slice the banana.','Serve with the nut butter.'],
+'Banana protein smoothie':['Add the protein powder, banana, nut butter and milk to a blender.','Add 100 ml water and 1 cup of ice.','Blend until smooth.'],
+'Cheese slices':['Enjoy 2 cheese slices (30 g).'],
+'Greek yoghurt & honey':['Spoon the yoghurt into a bowl and drizzle with the honey.'],
+'Baked pineapple':['Heat the oven to 180°C.','Sprinkle the pineapple with cinnamon and bake for about 15 minutes.'],
+'Skinny hot chocolate & protein':['Make up the skinny hot chocolate with hot water.','Whisk in the protein powder until smooth.']});
+const TG=[1450,105,48,148];
+const M=(name,ing)=>({name,ing:P(ing),m:MAC[name]||[0,0,0,0]});
+const W={
+1:{b:[M('Egg pita','Wholegrain pita:0.5:G;Eggs:2:D;Fat-free cottage cheese:1tbsp:D;Tomato:0.5:P;Onion:0.25:P'),
+M('All Bran & banana','Fat-free or plant milk:250ml:D;All Bran flakes:40g:G;Banana:0.5:P;Honey:1tsp:T;Protein powder:0.5scoop:T'),
+M('Yoghurt berry treat','Plain low-fat Greek yoghurt:180ml:D;Mixed berries:150g:P;Honey:1tsp:T;Protein powder:0.5scoop:T'),
+M('Protein smoothie','Protein powder:1scoop:T;Almond or peanut butter:15g:T;Plant or low-fat milk:150ml:D')],
+l:[M('Chicken quinoa bowl','Chicken breast:140g:M;Quinoa or rice:40g:G;Onion:0.25:P;Green olives:5:T;Cherry tomatoes:85g:P'),
+M('Steak & salad wrap','Lean beef strips:120g:M;Wholewheat wrap:1:G;Baby greens:1handful:P;Carrot:0.25:P;Tomato:0.25:P;Avocado:0.5:P'),
+M('Avocado & bean dish','Mixed or black beans (cooked):150g:T;Sweetcorn:80g:T;Avocado:0.5:P;Mixed salad greens:1handful:P;Balsamic vinegar:1tbsp:T'),
+M('Bacon, feta & avocado salad','Feta:30g:D;Avocado:0.5:P;Bacon (fat cut off):2:M;Mixed salad greens:1handful:P;Cherry tomatoes:75g:P;Balsamic vinegar:1tbsp:T')],
+d:[M('Chicken & roasted veggies','Chicken breast:140g:M;Mixed vegetables:150g:P;Butternut:150g:P'),
+M('Lean pork & couscous salad','Lean pork:140g:M;Couscous:45g:G;Corn & peas:150g:P;Baby greens:1handful:P'),
+M('White fish with potato wedges','White fish fillet:150g:M;Potato:150g:P;Mixed salad greens:1handful:P;Balsamic vinegar:1tbsp:T'),
+M('Baked butternut & mince','Butternut:300g:P;Lean beef mince:80g:M;Fat-free cottage cheese:2tbsp:D')]},
+2:{b:[M('Honey & berry oats','Oats:40g:G;Blueberries:80g:P;Honey:1tsp:T;Protein powder:0.5scoop:T'),
+M('Weetbix & berries','Weetbix:2:G;Mixed berries:80g:P;Fat-free or plant milk:175ml:D;Honey:1tsp:T;Protein powder:0.5scoop:T'),
+M('Breakfast wrap','Eggs:2:D;Fat-free cottage cheese:2tbsp:D;Avocado:0.25:P;Wholewheat wrap:1:G;Tomato:0.5:P;Baby greens:1handful:P'),
+M('Protein smoothie (berry)','Protein powder:1scoop:T;Frozen mixed berries:150g:P;Plant or low-fat milk:150ml:D')],
+l:[M('Roasted chickpea, tomato & chicken bowl','Chicken breast:140g:M;Chickpeas (tinned):120g:T;Cherry tomatoes:120g:P;Baby greens:1handful:P;Balsamic vinegar:1tbsp:T'),
+M('Chicken/beef sandwich','Wholewheat or rye bread:2slices:G;Sliced chicken or beef:3slices:M;Lettuce:1handful:P;Tomato:0.5:P;Hummus:1tbsp:D'),
+M('Rice & tuna dish','Brown rice:50g:G;Green olives:5:T;Tuna (tinned):1can:T'),
+M('Chicken & spinach wrap','Wholewheat wrap:1:G;Chicken breast:120g:M;Baby spinach:50g:P;Tomato:0.5:P;Fat-free cottage cheese:2tbsp:D')],
+d:[M('White fish with spring veggies','White fish fillet:150g:M;Baby potatoes:4:P;Green beans:150g:P;Onion:0.25:P;Mixed salad greens:1handful:P'),
+M('Butternut soup','Butternut soup:300ml:T;Brown bread:1slice:G'),
+M('Steak & rice with veggies','Lean beef steak:140g:M;Brown rice:45g:G;Sweetcorn:80g:T'),
+M('Chicken burger & wedges','Chicken fillet:120g:M;Wholewheat bun:1:G;Potato:150g:P;Lettuce:1handful:P;Tomato:0.25:P')]},
+3:{b:[M('Nut butter & honey toast','Wholegrain or rye bread:2slices:G;Almond or peanut butter:15g:T;Honey:1tsp:T;Mixed berries:50g:P'),
+M('Fibre Plus','Fibre Plus cereal:40g:G;Fat-free or plant milk:200ml:D;Honey:1tsp:T'),
+M('Scrambled eggs on toast','Eggs:2:D;Wholewheat or rye bread:1slice:G;Tomato:0.5:P;Onion:0.25:P'),
+M('Protein smoothie','Protein powder:1scoop:T;Almond or peanut butter:15g:T;Plant or low-fat milk:150ml:D')],
+l:[M('Tuna & egg salad','Tuna (tinned):1can:T;Baby potatoes:3:P;Eggs:1:D;Green olives:5:T;Green beans:80g:P;Baby greens:1handful:P;Balsamic vinegar:1tbsp:T'),
+M('Pasta Greek salad','Wholewheat pasta:40g:G;Cannellini beans (tinned):80g:T;Feta:30g:D;Cherry tomatoes:75g:P;Cucumber:0.25:P;Onion:0.25:P;Lemon:0.25:P'),
+M('Hummus & crackerbread','Crackerbread:3:G;Hummus:2tbsp:D;Tomato:0.5:P'),
+M('Steak & pasta','Lean steak strips:120g:M;Wholewheat pasta:50g:G;Tomato pasta sauce mix:200g:T')],
+d:[M('Oven-roasted gem squash & chicken','Chicken breast:140g:M;Gem squash:150g:P;Onion:1:P'),
+M('Beef steak roll','Lean beef steak:120g:M;Wholewheat bun:1:G;Cheddar:20g:D;Lite tomato sauce:1tbsp:T;Lettuce:1handful:P;Tomato:0.5:P'),
+M('Chicken & chickpea salad','Chicken breast:120g:M;Chickpeas (tinned):120g:T;Mixed salad greens:1handful:P;Cherry tomatoes:90g:P;Bell pepper:0.5:P'),
+M('Baked sweet potato','Sweet potato:1:P;Butter:1tsp:D;Eggs:1:D')]}};
+const SN=[M('Greek yoghurt','Plain low-fat Greek yoghurt:180ml:D'),M('Biltong','Lean biltong:50g:M'),
+M('Apple & nut butter','Apple:1:P;Almond or peanut butter:15g:T'),M('Protein smoothie','Protein powder:1scoop:T;Almond or peanut butter:15g:T;Plant or low-fat milk:150ml:D'),
+M('Nuts & biltong','Almonds or cashews:30g:T;Lean biltong:40g:M'),M('Yoghurt & berries','Plain low-fat Greek yoghurt:180ml:D;Mixed berries:100g:P'),
+M('Fresh fruit (kiwi, apple, berries, pineapple)','Fresh fruit of choice:1portion:P'),M('Dipped raw veggies','Carrot, cucumber or celery sticks:100g:P;Reduced-fat hummus:30g:D'),
+M('Rice cakes & avocado','Rice cakes:2:G;Avocado:0.25:P'),M('Egg on dry toast','Eggs:1:D;Crackerbread:1:G')];
+const DS=[M('Rice cakes & honey','Rice cakes:2:G;Honey:1tsp:T'),M('Dark chocolate or dates','70% dark chocolate:2blocks:T'),
+M('Banana & nut butter','Banana:1:P;Almond or peanut butter:15g:T'),M('Banana protein smoothie','Protein powder:1scoop:T;Banana:1:P;Almond or peanut butter:15g:T;Plant or low-fat milk:150ml:D'),
+M('Cheese slices','Cheese slices:2:D'),M('Greek yoghurt & honey','Plain low-fat Greek yoghurt:180ml:D;Honey:1tsp:T'),
+M('Baked pineapple','Pineapple:150g:P'),M('Skinny hot chocolate & protein','Skinny hot chocolate:1serving:T;Protein powder:1scoop:T')];
+const AI={P:'Fruit & veg',M:'Meat & fish',D:'Dairy & eggs',G:'Bread & grains',T:'Pantry'};
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const SL=[['b','Breakfast'],['l','Lunch'],['d','Dinner'],['s1','Snack 1 (mid-morning)'],['s2','Snack 2 (late afternoon)'],['x','Dessert snack (every second day)']];
+const fresh=()=>({w:1,t:'plan',days:DAYS.map(()=>({})),ck:{}});
+let S;try{S=JSON.parse(localStorage.getItem('jeanel-plan')||'null')}catch(e){}
+S=S&&S.days?S:fresh();
+const save=()=>{try{localStorage.setItem('jeanel-plan',JSON.stringify(S))}catch(e){}};
+const opts=(k,w)=>k==='x'?DS:(k==='s1'||k==='s2')?SN:W[w][k];
+const pick=(d,k)=>{const v=S.days[d][k];return v===undefined||v===''?null:opts(k,S.w)[+v]};
+function totals(){const t={};S.days.forEach((_,d)=>SL.forEach(([k])=>{const m=pick(d,k);if(m)m.ing.forEach(i=>{const key=i.n+'|'+i.u;(t[key]=t[key]||{n:i.n,u:i.u,a:i.a,q:0}).q+=i.q})}));return t}
+function fmt(q,u){if(!u)return Math.ceil(q-1e-9)+'';if(u==='g'&&q>=1000)return+(q/1000).toFixed(2)+' kg';if(u==='ml'&&q>=1000)return+(q/1000).toFixed(2)+' l';return+(Math.round(q*10)/10)+' '+u}
+function macBar(d){const t=[0,0,0,0];SL.forEach(([k])=>{const m=pick(d,k);if(m)m.m.forEach((v,i)=>t[i]+=v)});
+return`<div class="mac" aria-label="Daily totals against targets">${[['kcal',''],['Protein','g'],['Fat','g'],['Carbs','g']].map(([l,u],i)=>`<div class="${t[i]>TG[i]*1.1?'over':''}">${l}<b>${t[i]}${u}</b>of ${TG[i]}${u}<i><u style="width:${Math.min(100,Math.round(t[i]/TG[i]*100))}%"></u></i></div>`).join('')}</div>`}
+function plan(){
+let h=`<div class="bar"><label for="wk">Plan week</label><select id="wk">${[1,2,3].map(n=>`<option value="${n}"${S.w===n?' selected':''}>Week ${n} menu</option>`).join('')}</select>
+<button class="btn fill" data-a="auto">Fill the week for me</button><button class="btn" data-a="clear">Clear all</button></div>
+<p class="note">Each week of the plan has its own breakfast, lunch and dinner options. Snacks are shared by every week. Your picks save on this device. Macros are estimates worked out from typical food values (the plan itself doesn't list them), so treat them as a guide. Use “Copy from…” on any day to copy another day’s meals into it.</p><div class="grid">`;
+S.days.forEach((dy,d)=>{h+=`<section class="day"><div class="dh"><h3>${DAYS[d]}</h3><select class="cp" data-cpd="${d}" aria-label="Copy another day into ${DAYS[d]}"><option value="">Copy from…</option>${DAYS.map((n,i)=>i===d?'':`<option value="${i}">${n}</option>`).join('')}</select></div>${macBar(d)}`;
+SL.forEach(([k,l])=>{const o=opts(k,S.w),m=pick(d,k);
+h+=`<div class="slot"><span>${l}</span><select data-d="${d}" data-k="${k}" aria-label="${DAYS[d]} ${l}"><option value="">${k==='x'||k[0]==='s'?'Skip':'Choose a meal'}</option>${o.map((x,i)=>`<option value="${i}"${String(dy[k])===String(i)?' selected':''}>${x.name}</option>`).join('')}</select>${m?`<p class="ing"><b>${m.m[0]} kcal</b> &middot; P ${m.m[1]}g &middot; F ${m.m[2]}g &middot; C ${m.m[3]}g<br>${m.ing.map(i=>i.q+i.u+' '+i.n).join(', ')}</p>${METHOD[m.name]?`<button class="btn sm vb" data-v="${d}|${k}">View meal &amp; method</button>`:''}`:''}</div>`});
+h+='</section>'});return h+'</div>'}
+function shop(){
+const t=totals(),ks=Object.keys(t);
+if(!ks.length)return`<p class="empty">Your list is empty. Choose meals on the Plan tab and the ingredients you need to buy will appear here.</p>`;
+const done=ks.filter(k=>S.ck[k]).length;
+let h=`<div class="sum"><b>${ks.length} items</b> for Week ${S.w}. ${done} ticked off.</div><div class="bar"><button class="btn fill" data-a="copy">Copy list</button><button class="btn" data-a="unck">Untick all</button></div>`;
+Object.keys(AI).forEach(a=>{const it=ks.filter(k=>t[k].a===a).sort((x,y)=>t[x].n.localeCompare(t[y].n));if(!it.length)return;
+h+=`<section class="aisle"><h3>${AI[a]}</h3>${it.map(k=>`<label class="it${S.ck[k]?' done':''}"><input type="checkbox" data-c="${k}"${S.ck[k]?' checked':''}><span>${t[k].n}</span><b>${fmt(t[k].q,t[k].u)}</b></label>`).join('')}</section>`});
+return h+`<p class="note">Totals add up every meal you picked for the week. Tinned items, spices, salt and cooking spray are not counted exactly, so check your cupboard first.</p>`}
+function guide(){return`<div class="g"><h3>Daily targets</h3><div class="macros"><div><b>1450</b>kcal</div><div><b>105 g</b>protein</div><div><b>48 g</b>fats</div><div><b>148 g</b>carbs</div></div>
+<p class="note">Goal: lose 3–5 kg of fat over 10 weeks (300–500 g a week) and build about 2 kg of muscle. Add high-volume carbs for taste.</p></div>
+<div class="g"><h3>No tracking? Use your hand</h3><ul><li>Protein: a fist-sized portion</li><li>Carbs: two fists</li><li>Fats: a thumb-sized portion</li><li>Snacks: half a fist of protein, one fist of carbs, a thumb of fats</li></ul></div>
+<div class="g"><h3>Around training</h3><ul><li>Before: a bigger meal with protein and complex carbs 2–3 hours ahead, or a smaller one 1–2 hours ahead.</li><li>After: a smaller meal with protein and complex carbs within 1–2 hours.</li></ul></div>
+<div class="g"><h3>Everyday rules</h3><ul><li>Drink 1.5–2 L (about 10 glasses) of water a day.</li><li>Cook with Spray & Cook, olive oil or steam. Avoid butter for cooking.</li><li>One diet drink when needed, and one cappuccino every third day.</li><li>No sugar in drinks: sweetener, 1 tsp honey or xylitol only.</li><li>3–4 cups of coffee, tea or skinny hot chocolate a day, with 25 ml plant-based or fat-free milk per cup.</li><li>Season with chilli, lemon, garlic, herbs, pepper and natural spices. Use low-calorie sauces. Limit mayonnaise to 1 tsp.</li><li>No alcohol for the first 2 weeks, then one drink a week. One glass of wine (150 ml) or two single whiskies can replace your dessert snack.</li><li>One cheat meal a week.</li><li>You can swap lunch and dinner around.</li><li>Have 2 snacks a day, and a dessert snack every second day.</li></ul></div>
+<div class="g"><h3>Easy swaps</h3><ul><li>Berries: strawberries, blueberries, raspberries, mixed berries</li><li>Meat: lean pork for chicken, fish for chicken, extra-lean mince for lean steak</li><li>Carbs: 4–6 Provitas for 3–4 rice cakes</li><li>Veg: cauliflower, broccoli, zucchini, spinach, green beans; potato for sweet potato</li></ul></div>
+<p class="note">Questions about the plan? Contact janine@justfit.co.za.</p>`}
+function render(){document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===S.t));
+document.getElementById('view').innerHTML=S.t==='plan'?plan():S.t==='shop'?shop():guide();save()}
+const qf=q=>({0.25:'¼',0.5:'½'}[q]||q);
+function openMeal(key){const[d,k]=key.split('|'),m=pick(+d,k);if(!m)return;const dl=document.getElementById('dlg');
+dl.innerHTML=`<div class="dc"><h2 id="dt">${m.name}</h2><p class="note">${SL.find(x=>x[0]===k)[1]}, ${DAYS[d]} &middot; ${m.m[0]} kcal &middot; P ${m.m[1]}g &middot; F ${m.m[2]}g &middot; C ${m.m[3]}g</p><h3>Ingredients</h3><ul>${m.ing.map(i=>`<li><b>${qf(i.q)}${i.u?' '+i.u:''}</b> ${i.n}</li>`).join('')}</ul><h3>Method</h3><ol>${METHOD[m.name].map(t=>`<li>${t}</li>`).join('')}</ol><button class="btn fill" data-x>Close</button></div>`;dl.showModal()}
+document.addEventListener('click',e=>{
+const v=e.target.closest('[data-v]');if(v){openMeal(v.dataset.v);return}
+if(e.target.closest('[data-x]')||e.target.id==='dlg'){document.getElementById('dlg').close();return}
+const t=e.target.closest('[data-t]');if(t){S.t=t.dataset.t;render();scrollTo(0,0);return}
+const a=e.target.closest('[data-a]');if(!a)return;const x=a.dataset.a;
+if(x==='clear'){S.days=DAYS.map(()=>({}));S.ck={};render()}
+if(x==='auto'){S.days=DAYS.map((_,i)=>({b:i%4,l:(i+1)%4,d:(i+2)%4,s1:i%SN.length,s2:(i+3)%SN.length,x:i%2===0?(i/2)%DS.length:''}));S.ck={};render()}
+if(x==='unck'){S.ck={};render()}
+if(x==='copy'){const t=totals();let s="Shopping list - Week "+S.w+"\n";Object.keys(AI).forEach(k=>{const it=Object.values(t).filter(v=>v.a===k);if(it.length)s+="\n"+AI[k]+"\n"+it.map(v=>"- "+v.n+": "+fmt(v.q,v.u)).join("\n")+"\n"});
+try{navigator.clipboard.writeText(s).then(()=>{a.textContent='Copied'},()=>{a.textContent='Copy blocked: select the list manually'})}catch(err){a.textContent='Copy blocked: select the list manually'}}});
+document.addEventListener('change',e=>{const el=e.target;
+if(el.id==='wk'){S.w=+el.value;S.days.forEach(d=>{delete d.b;delete d.l;delete d.d});S.ck={};render()}
+else if(el.dataset.cpd){if(el.value!==''){S.days[+el.dataset.cpd]={...S.days[+el.value]};S.ck={};render()}}
+else if(el.dataset.k){S.days[+el.dataset.d][el.dataset.k]=el.value;S.ck={};render();el.focus?.()}
+else if(el.dataset.c){if(el.checked)S.ck[el.dataset.c]=true;else delete S.ck[el.dataset.c];render()}});
+render();
+</script>
+</body>
+</html>
